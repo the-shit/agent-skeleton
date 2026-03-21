@@ -1,26 +1,34 @@
 {
-    "name": "jordanpartridge/agent-skeleton",
+    "name": "the-shit/agent-skeleton",
     "description": "Laravel 13 agent skeleton — base template for all Odin AI agents",
     "type": "project",
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "ext-pdo_pgsql": "*",
         "hirethunk/verbs": "^1.0",
+        "hirethunk/verbs-history": "^1.0",
         "illuminate/redis": "*",
         "laravel/ai": "^0.3.1",
         "laravel/framework": "^13.0",
         "laravel/horizon": "^5.0",
         "predis/predis": "^3.4",
-        "ext-pdo_pgsql": "*",
-        "prism-php/prism": "^0.99"
+        "prism-php/prism": "^0.99",
+        "spatie/laravel-activitylog": "^4.0",
+        "spatie/laravel-data": "^4.0",
+        "spatie/laravel-health": "^1.0",
+        "spatie/laravel-webhook-client": "^3.0",
+        "spatie/laravel-webhook-server": "^3.0"
     },
     "require-dev": {
+        "larastan/larastan": "^3.0",
         "laravel/pint": "^1.0",
         "laravel/telescope": "^5.0",
         "mockery/mockery": "^1.6",
         "pestphp/pest": "^3.0|^4.0",
+        "pestphp/pest-plugin-arch": "^3.0",
         "pestphp/pest-plugin-laravel": "^4.0",
-        "phpstan/phpstan": "^2.0"
+        "rector/rector": "^2.0"
     },
     "autoload": {
         "psr-4": {

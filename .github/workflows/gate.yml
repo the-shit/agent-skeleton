@@ -1,0 +1,25 @@
+name: Sentinel Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  gate:
+    name: Sentinel Gate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      checks: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: synapse-sentinel/gate@v1.5.0
+        with:
+          check: certify
+          coverage-threshold: 100
+          auto-merge: false
+          github-token: ${{ secrets.GITHUB_TOKEN }}
