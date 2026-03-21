@@ -1,0 +1,22 @@
+# Podman Quadlet — copy to /home/jordan/.config/containers/systemd/
+# Rename to match your agent: lexi-agent.container, raven-agent.container, etc.
+
+[Unit]
+Description=Agent — replace with your agent name
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image=ghcr.io/jordanpartridge/agent-skeleton:latest
+# Image=ghcr.io/the-shit/your-agent:latest
+Network=host
+EnvironmentFile=/home/jordan/projects/your-agent/.env
+Volume=/home/jordan/projects/your-agent/storage:/app/storage
+AutoUpdate=registry
+
+[Service]
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=default.target
