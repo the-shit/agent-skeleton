@@ -6,8 +6,8 @@
     "require": {
         "php": "^8.3",
         "ext-pdo_pgsql": "*",
-        "hirethunk/verbs": "^1.0",
-        "hirethunk/verbs-history": "^1.0",
+        "hirethunk/verbs": "^0.7",
+        "hirethunk/verbs-history": "^0.6",
         "illuminate/redis": "*",
         "laravel/ai": "^0.3.1",
         "laravel/framework": "^13.0",
