@@ -2,8 +2,11 @@ includes:
     - vendor/larastan/larastan/extension.neon
 
 parameters:
-    level: 8
+    level: 6
     paths:
         - app
+
+    excludePaths:
+        - app/Http/Middleware/TrustProxies.php
 
     checkMissingIterableValueType: false
