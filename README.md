@@ -1,82 +1,65 @@
-# Foundry
+# Agent Skeleton
 
-Manifest-driven Laravel microservice scaffolder. Accepts a JSON manifest describing an app and produces a fully wired Laravel microservice — GitHub repo created, code generated via Blueprint + Ollama, quality gate passed, Podman Quadlet deployed on Odin.
+Laravel 13 template for Odin AI agents. Clone this to build a new agent in minutes.
 
 ## Stack
 
-- **Laravel 13** — API-only
-- **spatie/laravel-data** — typed manifest DTOs
-- **Laravel Horizon** — queue visibility and workers
-- **Laravel Socialite** — GitHub OAuth for repo automation
-- **spatie/laravel-webhook-client** — Bifrost event ingestion
+- **Laravel 13** — full web app (not Laravel Zero)
+- **Laravel AI** — agent framework with tool calling
+- **Prism** — multi-provider AI (OpenRouter default)
+- **Horizon** — queue visibility and workers
+- **Verbs** — event sourcing for agent actions
 - **FrankenPHP** — HTTP server (Octane mode)
 
 ## Architecture
 
 ```
-POST /api/scaffold (ManifestData JSON)
+External World
+    ↓ (direct Slack webhooks)
+SlackController (sync, <3s response)
+    ↓ (dispatch to queue)
+Horizon Workers
     ↓
-RepoGeneratorJob
-    → GitHub: create repo, seed issues, register Bifrost source
+YourAgent (Laravel AI + tools)
     ↓
-CodeGeneratorJob
-    → Blueprint scaffold
-    → Ollama fills in business logic
-    → Quality gate (Pint, PHPStan, 100% coverage)
-    → Podman Quadlet deploy on Odin
+Slack / GitHub / APIs
+
+Bifrost (optional, async events)
+    ↓ Redis pub/sub
+ListenCommand → dispatch jobs
 ```
 
-## Manifest Schema
-
-```json
-{
-  "name": "billing-service",
-  "description": "Handles billing and subscriptions",
-  "stack": {
-    "framework": "laravel",
-    "type": "microservice",
-    "php": "8.2",
-    "auth": "github-socialite",
-    "queue": "redis",
-    "db": "sqlite"
-  },
-  "models": [
-    {
-      "name": "Plan",
-      "attributes": ["name", "price_cents"],
-      "relationships": [
-        { "type": "hasMany", "model": "Subscription" }
-      ]
-    }
-  ],
-  "bifrost": {
-    "source": "billing-service",
-    "events": ["subscription.created"]
-  },
-  "quality": {
-    "runner": true,
-    "coverage": 100,
-    "pint": true,
-    "phpstan": true
-  },
-  "deploy": {
-    "host": "odin",
-    "quadlet": true
-  }
-}
-```
-
-## Development
+## Create a New Agent
 
 ```bash
-composer install
+gh repo create the-shit/your-agent --template the-shit/agent-skeleton
+cd your-agent
 cp .env.example .env
+# Fill in your keys
 php artisan key:generate
 php artisan migrate
-php artisan test --coverage --min=100
-./vendor/bin/pint
 ```
 
-## Quality Gate
+## Customize
 
-100% test coverage required. Pest BDD syntax enforced. Laravel Pint + PHPStan level 8.
+1. **`app/Agent/YourAgent.php`** — extend `BaseAgent`, define persona + tools
+2. **`app/Commands/ListenCommand.php`** — override `channels()` and `route()`
+3. **`app/Http/Controllers/SlackController.php`** — wire up slash commands
+4. **`bootstrap/app.php`** — add scheduled tasks
+5. **`deploy/agent.container`** — update for your agent name
+
+## Deploy (Quadlet)
+
+```bash
+cp deploy/agent.container ~/.config/containers/systemd/your-agent.container
+# Edit the container file with correct image and env paths
+systemctl --user daemon-reload
+systemctl --user enable --now your-agent
+```
+
+## Key Patterns
+
+- **Conversation memory**: `ConversationMemory::push/history` — Redis-backed, survives restarts
+- **Event sourcing**: Verbs events for every significant agent action
+- **Own database**: each agent has isolated storage (SQLite default, MySQL optional)
+- **Direct Slack**: slash commands hit the agent directly — no Bifrost dependency for sync responses
